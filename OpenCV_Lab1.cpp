@@ -26,7 +26,7 @@ int main()
 	bool flag = 1;
 	Mat img, back, mask;
 
-	//считываем из файла фон
+	//Г±Г·ГЁГІГ»ГўГ ГҐГ¬ ГЁГ§ ГґГ Г©Г«Г  ГґГ®Г­
 	Mat fimg = imread("KNDR.png", CV_LOAD_IMAGE_COLOR);
 	fimg.convertTo(img, CV_8UC3);
 	namedWindow("img", CV_WINDOW_AUTOSIZE);
@@ -43,14 +43,14 @@ int main()
 	//imwrite("gray.jpg", rimg);
 	//imwrite("mask.jpg", mask);
 		
-	//считываем из файла каретку
+	//Г±Г·ГЁГІГ»ГўГ ГҐГ¬ ГЁГ§ ГґГ Г©Г«Г  ГЄГ Г°ГҐГІГЄГі
 	Mat temp = imread("MBR.png", CV_LOAD_IMAGE_COLOR);
 	temp.convertTo(temp, CV_8UC3);
 	Rect r(0, 0, Width, Height);
 	Mat img1 = temp(r);
 	//imwrite("img1.jpg", img1);
 
-	//создаем контейнер и заполняем его значениями косинуса
+	//Г±Г®Г§Г¤Г ГҐГ¬ ГЄГ®Г­ГІГҐГ©Г­ГҐГ° ГЁ Г§Г ГЇГ®Г«Г­ГїГҐГ¬ ГҐГЈГ® Г§Г­Г Г·ГҐГ­ГЁГїГ¬ГЁ ГЄГ®Г±ГЁГ­ГіГ±Г 
 	vector<Point> contour;
 
 	for (float x = 0; x <= coorX; x += 5)
@@ -59,32 +59,32 @@ int main()
 		contour.push_back(Point(x, y));                      
 	}	
 	
-	//рисуем косинусоиду
+	//Г°ГЁГ±ГіГҐГ¬ ГЄГ®Г±ГЁГ­ГіГ±Г®ГЁГ¤Гі
 	Point *pts = (Point*)Mat(contour).data;
 	int npts = Mat(contour).rows;
 	polylines(img, &pts, &npts, 1, false, Scalar(50, 50, 150), 2, CV_AA, 0);
 	img.copyTo(back);
 
-	//перемещаем коретку по косинусоиде
+	//ГЇГҐГ°ГҐГ¬ГҐГ№Г ГҐГ¬ ГЄГ®Г°ГҐГІГЄГі ГЇГ® ГЄГ®Г±ГЁГ­ГіГ±Г®ГЁГ¤ГҐ
 	for (float x = 0; x <= END; x += 5)
 	{
 		float y = -150 * cos(x / 50) + 400;
 
-		//поворачиваем изображение с кареткой
+		//ГЇГ®ГўГ®Г°Г Г·ГЁГўГ ГҐГ¬ ГЁГ§Г®ГЎГ°Г Г¦ГҐГ­ГЁГҐ Г± ГЄГ Г°ГҐГІГЄГ®Г©
 		Point2f src_center(img1.cols / 2.0F, img1.rows / 2.0F);
 		Mat rot_matrix = getRotationMatrix2D(src_center, -8, 1);
 		Mat rotated_img(Size(img1.size().height, img1.size().width), img1.type());
 		warpAffine(img1, rotated_img, rot_matrix, img1.size());
 		//imwrite("rot1.jpg", rotated_img);
 
-		//применяем маску для фильтрации
+		//ГЇГ°ГЁГ¬ГҐГ­ГїГҐГ¬ Г¬Г Г±ГЄГі Г¤Г«Гї ГґГЁГ«ГјГІГ°Г Г¶ГЁГЁ
 		cvtColor(rotated_img, mask, CV_BGR2GRAY);
 
-		//создать копию ракеты в формате HSV
+		//Г±Г®Г§Г¤Г ГІГј ГЄГ®ГЇГЁГѕ Г°Г ГЄГҐГІГ» Гў ГґГ®Г°Г¬Г ГІГҐ HSV
 		Mat src_hsv = rotated_img.clone();
 		cvtColor(rotated_img, src_hsv, CV_BGR2GRAY);
 
-		//применить функцию threshold
+		//ГЇГ°ГЁГ¬ГҐГ­ГЁГІГј ГґГіГ­ГЄГ¶ГЁГѕ threshold
 		Mat dst = rotated_img.clone();
 		cvtColor(dst, dst, CV_BGR2GRAY);
 		threshold(src_hsv, dst, 245, 255, THRESH_BINARY);
@@ -92,12 +92,12 @@ int main()
 		waitKey(50);
 
 		bitwise_not(dst, dst);
-		//обрезаем края
+		//Г®ГЎГ°ГҐГ§Г ГҐГ¬ ГЄГ°Г Гї
 		Mat ROI = dst(Rect(10, 10, (Width-15), (Height-20)));
 		imshow("mask22", ROI);
 		waitKey(50);
 
-		//перевести из HSV в бинарный формат
+		//ГЇГҐГ°ГҐГўГҐГ±ГІГЁ ГЁГ§ HSV Гў ГЎГЁГ­Г Г°Г­Г»Г© ГґГ®Г°Г¬Г ГІ
 		
 		//bitwise_and(rotated_img, rimg, dst);
 		Mat rimg = rotated_img(Rect(10, 10, (Width - 15), (Height - 20)));
@@ -110,7 +110,7 @@ int main()
 		rimg.copyTo(img(Rect(x, y, Width-15, Height-20)));
 		imshow("img", img);
 
-		//сохраняем изображение, когда коретка на половине пути
+		//Г±Г®ГµГ°Г Г­ГїГҐГ¬ ГЁГ§Г®ГЎГ°Г Г¦ГҐГ­ГЁГҐ, ГЄГ®ГЈГ¤Г  ГЄГ®Г°ГҐГІГЄГ  Г­Г  ГЇГ®Г«Г®ГўГЁГ­ГҐ ГЇГіГІГЁ
 		if (x >= coorX / 2 && flag == 1)
 		{
 			imwrite("centre.png", img);
